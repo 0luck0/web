@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Two.js 基础模板</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #1a1a2e;
+            overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 12px;
+            color: #fff;
+            backdrop-filter: blur(10px);
+        }
+
+        .controls h3 {
+            margin-bottom: 15px;
+            color: #e84393;
+        }
+
+        .control-item {
+            margin-bottom: 10px;
+        }
+
+        .control-item label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .control-item input[type="range"] {
+            width: 150px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            background: linear-gradient(90deg, #e84393, #a29bfe);
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .info {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 12px;
+            color: #a0a0a0;
+            font-size: 0.85rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .title {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #fff;
+            text-align: right;
+        }
+
+        .title h1 {
+            font-size: 1.5rem;
+            background: linear-gradient(90deg, #e84393, #a29bfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body>
+    <div class="title">
+        <h1>Two.js</h1>
+        <p>极简 2D 图形 API</p>
+    </div>
+
+    <div class="controls">
+        <h3>控制面板</h3>
+        <div class="control-item">
+            <label>动画速度: <span id="speedValue">1</span></label>
+            <input type="range" id="speed" min="0.1" max="3" step="0.1" value="1">
+        </div>
+        <button class="btn" id="addShapeBtn">添加路径</button>
+        <button class="btn" id="clearShapesBtn">清空路径</button>
+    </div>
+
+    <div class="info">
+        <p>Two.js v0.7 基础模板</p>
+        <p>SVG/Canvas 双渲染</p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/two.js/0.7.13/two.min.js"></script>
+    <script>
+        const elem = document.createElement('div');
+        elem.id = 'two-container';
+        elem.style.width = '100vw';
+        elem.style.height = '100vh';
+        document.body.appendChild(elem);
+
+        const two = new Two({
+            type: Two.Types.canvas,
+            width: window.innerWidth,
+            height: window.innerHeight,
+        }).appendTo(elem);
+
+        const centerX = window.innerWidth / 2;
+        const centerY = window.innerHeight / 2;
+
+        const circle = two.makeCircle(centerX - 80, centerY, 50);
+        circle.fill = '#e84393';
+        circle.stroke = '#fff';
+        circle.linewidth = 2;
+
+        const rect = two.makeRectangle(centerX + 80, centerY, 100, 80);
+        rect.fill = '#a29bfe';
+        rect.stroke = '#fff';
+        rect.linewidth = 2;
+
+        const path = two.makePath(
+            centerX - 50, centerY + 80,
+            centerX, centerY + 140,
+            centerX + 50, centerY + 80,
+            true
+        );
+        path.fill = '#00cec9';
+        path.stroke = '#fff';
+        path.linewidth = 2;
+
+        const text = two.makeText('Two.js', centerX - 50, centerY - 100);
+        text.size = 28;
+        text.weight = 700;
+        text.fill = '#fff';
+
+        const group = two.makeGroup(circle, rect, path);
+        group.center();
+
+        const shapes = [];
+        const colors = ['#e84393', '#a29bfe', '#00cec9', '#ffeaa7', '#fab1a0'];
+
+        function addShape() {
+            const cx = Math.random() * window.innerWidth;
+            const cy = Math.random() * window.innerHeight;
+            const radius = 30 + Math.random() * 40;
+
+            const points = [];
+            const numPoints = 5 + Math.floor(Math.random() * 4);
+
+            for (let i = 0; i < numPoints; i++) {
+                const angle = (i / numPoints) * Math.PI * 2;
+                const r = radius * (0.5 + Math.random() * 0.5);
+                points.push(cx + Math.cos(angle) * r);
+                points.push(cy + Math.sin(angle) * r);
+            }
+
+            const shape = two.makePath(points, true);
+            shape.fill = colors[Math.floor(Math.random() * colors.length)];
+            shape.stroke = '#fff';
+            shape.linewidth = 2;
+
+            shape.userData = {
+                angle: 0,
+                speed: (Math.random() - 0.5) * 0.02,
+            };
+
+            shapes.push(shape);
+            two.update();
+        }
+
+        function clearShapes() {
+            shapes.forEach(function(shape) {
+                shape.remove();
+            });
+            shapes.length = 0;
+            two.update();
+        }
+
+        for (let i = 0; i < 5; i++) {
+            addShape();
+        }
+
+        let speed = 1;
+        document.getElementById('speed').addEventListener('input', function(e) {
+            speed = parseFloat(e.target.value);
+            document.getElementById('speedValue').textContent = e.target.value;
+        });
+
+        document.getElementById('addShapeBtn').addEventListener('click', addShape);
+        document.getElementById('clearShapesBtn').addEventListener('click', clearShapes);
+
+        two.bind('update', function(frameCount) {
+            const t = frameCount * 0.02 * speed;
+
+            circle.rotation += 0.02 * speed;
+            rect.rotation -= 0.02 * speed;
+            path.scale = 1 + Math.sin(t) * 0.1;
+
+            group.rotation += 0.01 * speed;
+            group.scale = 1 + Math.sin(t * 0.5) * 0.05;
+
+            shapes.forEach(function(shape) {
+                shape.rotation += shape.userData.speed * speed;
+                shape.scale = 1 + Math.sin(t + shape.userData.angle) * 0.1;
+            });
+        });
+
+        two.play();
+
+        window.addEventListener('resize', function() {
+            two.width = window.innerWidth;
+            two.height = window.innerHeight;
+            two.update();
+        });
+    </script>
+</body>
+</html>

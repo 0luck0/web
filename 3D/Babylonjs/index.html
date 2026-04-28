@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Babylon.js 基础模板</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #0d0d1a;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        .controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 12px;
+            color: #fff;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+        }
+
+        .controls h3 {
+            margin-bottom: 15px;
+            color: #a855f7;
+        }
+
+        .control-item {
+            margin-bottom: 12px;
+        }
+
+        .control-item label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .control-item input[type="range"] {
+            width: 150px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            background: linear-gradient(90deg, #a855f7, #00d4ff);
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .info {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 12px;
+            color: #a0a0a0;
+            font-size: 0.85rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+        }
+
+        .title {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #fff;
+            text-align: right;
+        }
+
+        .title h1 {
+            font-size: 1.5rem;
+            background: linear-gradient(90deg, #a855f7, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #a855f7;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loading">加载中...</div>
+
+    <div class="title">
+        <h1>Babylon.js</h1>
+        <p>3D 游戏引擎</p>
+    </div>
+
+    <div class="controls">
+        <h3>控制面板</h3>
+        <div class="control-item">
+            <label>旋转速度: <span id="rotationValue">1</span></label>
+            <input type="range" id="rotationSpeed" min="0" max="3" step="0.1" value="1">
+        </div>
+        <div class="control-item">
+            <label>动画幅度: <span id="animationValue">1</span></label>
+            <input type="range" id="animationAmplitude" min="0.5" max="2" step="0.1" value="1">
+        </div>
+        <button class="btn" id="addSphereBtn">添加球体</button>
+        <button class="btn" id="clearSpheresBtn">清空球体</button>
+    </div>
+
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.2/dat.gui.min.js"></script>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script>
+        const canvas = document.createElement('canvas');
+        canvas.style.width = '100%';
+        canvas.style.height = '100%';
+        canvas.id = 'renderCanvas';
+        document.body.appendChild(canvas);
+
+        const engine = new BABYLON.Engine(canvas, true, {
+            preserveDrawingBuffer: true,
+            stencil: true,
+        });
+
+        const createScene = function () {
+            const scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color3(0.05, 0.05, 0.1);
+
+            const camera = new BABYLON.ArcRotateCamera(
+                'camera',
+                -Math.PI / 2,
+                Math.PI / 3,
+                15,
+                BABYLON.Vector3.Zero(),
+                scene
+            );
+            camera.attachControl(canvas, true);
+            camera.lowerRadiusLimit = 5;
+            camera.upperRadiusLimit = 30;
+            camera.wheelPrecision = 50;
+
+            const light = new BABYLON.HemisphericLight(
+                'light',
+                new BABYLON.Vector3(0, 1, 0),
+                scene
+            );
+            light.intensity = 0.5;
+
+            const pointLight = new BABYLON.PointLight(
+                'pointLight',
+                new BABYLON.Vector3(10, 10, 10),
+                scene
+            );
+            pointLight.intensity = 100;
+            pointLight.diffuse = new BABYLON.Color3(0.5, 1, 0.5);
+
+            const pointLight2 = new BABYLON.PointLight(
+                'pointLight2',
+                new BABYLON.Vector3(-10, -5, -10),
+                scene
+            );
+            pointLight2.intensity = 100;
+            pointLight2.diffuse = new BABYLON.Color3(0.5, 0.5, 1);
+
+            const boxMaterial = new BABYLON.StandardMaterial('boxMaterial', scene);
+            boxMaterial.diffuseColor = new BABYLON.Color3(0.6, 0.2, 1);
+            boxMaterial.specularColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+
+            const box = BABYLON.MeshBuilder.CreateBox('box', { size: 2 }, scene);
+            box.material = boxMaterial;
+            box.position.y = 1;
+
+            const groundMaterial = new BABYLON.StandardMaterial('groundMaterial', scene);
+            groundMaterial.diffuseColor = new BABYLON.Color3(0.2, 0.2, 0.3);
+            groundMaterial.specularColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+
+            const ground = BABYLON.MeshBuilder.CreateGround(
+                'ground',
+                { width: 20, height: 20 },
+                scene
+            );
+            ground.material = groundMaterial;
+
+            const createParticleTexture = function() {
+                const size = 32;
+                const textureCanvas = document.createElement('canvas');
+                textureCanvas.width = size;
+                textureCanvas.height = size;
+                const ctx = textureCanvas.getContext('2d');
+                const gradient = ctx.createRadialGradient(
+                    size/2, size/2, 0,
+                    size/2, size/2, size/2
+                );
+                gradient.addColorStop(0, 'white');
+                gradient.addColorStop(1, 'transparent');
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, size, size);
+                return textureCanvas.toDataURL();
+            };
+
+            const particles = new BABYLON.ParticleSystem('particles', 2000, scene);
+            particles.particleTexture = new BABYLON.Texture(createParticleTexture(), scene);
+            particles.emitter = new BABYLON.Vector3(0, 2, 0);
+            particles.minEmitBox = new BABYLON.Vector3(-1, 0, -1);
+            particles.maxEmitBox = new BABYLON.Vector3(1, 0, 1);
+            particles.color1 = new BABYLON.Color4(0.6, 0.2, 1, 1);
+            particles.color2 = new BABYLON.Color4(0.2, 0.6, 1, 1);
+            particles.colorDead = new BABYLON.Color4(0, 0, 0, 0);
+            particles.minSize = 0.1;
+            particles.maxSize = 0.3;
+            particles.minLifeTime = 1;
+            particles.maxLifeTime = 3;
+            particles.emitRate = 100;
+            particles.blendMode = BABYLON.ParticleSystem.BLENDMODE_ADD;
+            particles.gravity = new BABYLON.Vector3(0, -2, 0);
+            particles.direction1 = new BABYLON.Vector3(-2, 2, -2);
+            particles.direction2 = new BABYLON.Vector3(2, 4, 2);
+            particles.minAngularSpeed = 0;
+            particles.maxAngularSpeed = Math.PI;
+            particles.start();
+
+            return { scene, box, particles };
+        };
+
+        const { scene, box } = createScene();
+
+        const spheres = [];
+
+        function addSphere() {
+            const material = new BABYLON.StandardMaterial('sphereMaterial', scene);
+            material.diffuseColor = new BABYLON.Color3(
+                Math.random(),
+                Math.random(),
+                Math.random()
+            );
+            material.specularColor = new BABYLON.Color3(0.5, 0.5, 0.5);
+
+            const sphere = BABYLON.MeshBuilder.CreateSphere(
+                'sphere',
+                { diameter: 0.5 + Math.random() },
+                scene
+            );
+            sphere.material = material;
+            sphere.position = new BABYLON.Vector3(
+                (Math.random() - 0.5) * 10,
+                5,
+                (Math.random() - 0.5) * 10
+            );
+            spheres.push(sphere);
+        }
+
+        function clearSpheres() {
+            spheres.forEach(function(sphereItem) {
+                sphereItem.dispose();
+            });
+            spheres.length = 0;
+        }
+
+        for (let i = 0; i < 3; i++) {
+            addSphere();
+        }
+
+        document.getElementById('addSphereBtn').addEventListener('click', addSphere);
+        document.getElementById('clearSpheresBtn').addEventListener('click', clearSpheres);
+
+        let rotationSpeed = 1;
+        let animationAmplitude = 1;
+
+        document.getElementById('rotationSpeed').addEventListener('input', function(e) {
+            rotationSpeed = parseFloat(e.target.value);
+            document.getElementById('rotationValue').textContent = e.target.value;
+        });
+
+        document.getElementById('animationAmplitude').addEventListener('input', function(e) {
+            animationAmplitude = parseFloat(e.target.value);
+            document.getElementById('animationValue').textContent = e.target.value;
+        });
+
+        scene.registerBeforeRender(function() {
+            box.rotation.x += 0.01 * rotationSpeed;
+            box.rotation.y += 0.015 * rotationSpeed;
+
+            const time = Date.now() * 0.001;
+            box.position.y = 1 + Math.sin(time) * 0.2 * animationAmplitude;
+        });
+
+        engine.runRenderLoop(function() {
+            scene.render();
+        });
+
+        window.addEventListener('resize', function() {
+            engine.resize();
+        });
+
+        document.getElementById('loading').style.display = 'none';
+    </script>
+</body>
+</html>

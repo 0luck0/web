@@ -1,0 +1,1123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作品集 - 图形编程实验室</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --neon-blue: #00f5ff;
+            --neon-purple: #bf00ff;
+            --neon-pink: #ff006e;
+            --neon-green: #39ff14;
+            --neon-orange: #ff6600;
+            --neon-cyan: #00ffd5;
+            --glass-bg: rgba(10, 15, 30, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            font-family: 'Rajdhani', 'Segoe UI', sans-serif;
+            background: #050510;
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            background-image:
+                linear-gradient(rgba(0, 245, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 245, 255, 0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            animation: gridMove 20s linear infinite;
+        }
+
+        @keyframes gridMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(60px, 60px); }
+        }
+
+        .bg-glow {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(150px);
+            z-index: -1;
+            opacity: 0.4;
+        }
+
+        .glow-1 {
+            top: -200px;
+            left: -200px;
+            background: var(--neon-purple);
+            animation: floatGlow1 12s ease-in-out infinite;
+        }
+
+        .glow-2 {
+            bottom: -200px;
+            right: -200px;
+            background: var(--neon-blue);
+            animation: floatGlow2 14s ease-in-out infinite;
+        }
+
+        .glow-3 {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--neon-pink);
+            opacity: 0.2;
+            animation: pulseGlow 8s ease-in-out infinite;
+        }
+
+        .glow-4 {
+            bottom: 30%;
+            left: 10%;
+            background: var(--neon-green);
+            opacity: 0.15;
+            animation: floatGlow3 16s ease-in-out infinite;
+        }
+
+        @keyframes floatGlow1 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(80px, 40px) scale(1.1); }
+            66% { transform: translate(-40px, 80px) scale(0.95); }
+        }
+
+        @keyframes floatGlow2 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(-60px, -40px) scale(1.05); }
+            66% { transform: translate(40px, -80px) scale(1.1); }
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.15; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.25; transform: translate(-50%, -50%) scale(1.3); }
+        }
+
+        @keyframes floatGlow3 {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(60px, -50px) scale(1.08); }
+        }
+
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+            z-index: 9999;
+            animation: scanMove 4s linear infinite;
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        @keyframes scanMove {
+            0% { top: -4px; }
+            100% { top: 100%; }
+        }
+
+        header {
+            text-align: center;
+            padding: 110px 20px 65px;
+            position: relative;
+        }
+
+        .header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 22px;
+            border: 1px solid var(--neon-blue);
+            border-radius: 30px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--neon-blue);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+            background: rgba(0, 245, 255, 0.05);
+            box-shadow: 0 0 20px rgba(0, 245, 255, 0.2), inset 0 0 20px rgba(0, 245, 255, 0.05);
+            animation: badgePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 245, 255, 0.2), inset 0 0 20px rgba(0, 245, 255, 0.05); }
+            50% { box-shadow: 0 0 35px rgba(0, 245, 255, 0.4), inset 0 0 25px rgba(0, 245, 255, 0.08); }
+        }
+
+        h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(2.5rem, 7vw, 4.5rem);
+            font-weight: 900;
+            margin-bottom: 18px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            line-height: 1.1;
+        }
+
+        h1 .main-text {
+            background: linear-gradient(135deg, #fff 0%, var(--neon-blue) 50%, var(--neon-purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: block;
+        }
+
+        h1 .sub-text {
+            font-size: 0.45em;
+            color: var(--neon-green);
+            display: block;
+            letter-spacing: 8px;
+            margin-top: 8px;
+            font-weight: 400;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 1.12rem;
+            max-width: 650px;
+            margin: 0 auto;
+            line-height: 1.7;
+            font-weight: 300;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+            margin-bottom: 55px;
+            flex-wrap: wrap;
+            padding: 0 20px;
+        }
+
+        .nav-tab {
+            padding: 14px 36px;
+            border-radius: 14px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid;
+            position: relative;
+            overflow: hidden;
+            text-transform: uppercase;
+        }
+
+        .nav-tab::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .nav-tab:hover::before,
+        .nav-tab.active::before {
+            opacity: 1;
+        }
+
+        .tab-2d {
+            background: rgba(255, 102, 0, 0.06);
+            color: var(--neon-orange);
+            border-color: rgba(255, 102, 0, 0.25);
+        }
+
+        .tab-2d::before {
+            background: linear-gradient(135deg, rgba(255, 102, 0, 0.15), rgba(255, 0, 110, 0.1));
+        }
+
+        .tab-2d:hover,
+        .tab-2d.active {
+            border-color: var(--neon-orange);
+            box-shadow: 0 0 35px rgba(255, 102, 0, 0.25), inset 0 0 25px rgba(255, 102, 0, 0.08);
+            transform: translateY(-3px);
+        }
+
+        .tab-3d {
+            background: rgba(57, 255, 20, 0.06);
+            color: var(--neon-green);
+            border-color: rgba(57, 255, 20, 0.25);
+        }
+
+        .tab-3d::before {
+            background: linear-gradient(135deg, rgba(57, 255, 20, 0.15), rgba(0, 245, 255, 0.1));
+        }
+
+        .tab-3d:hover,
+        .tab-3d.active {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 35px rgba(57, 255, 20, 0.25), inset 0 0 25px rgba(57, 255, 20, 0.08);
+            transform: translateY(-3px);
+        }
+
+        .tab-ai {
+            background: rgba(191, 0, 255, 0.06);
+            color: var(--neon-purple);
+            border-color: rgba(191, 0, 255, 0.25);
+        }
+
+        .tab-ai::before {
+            background: linear-gradient(135deg, rgba(191, 0, 255, 0.15), rgba(0, 245, 213, 0.1));
+        }
+
+        .tab-ai:hover,
+        .tab-ai.active {
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 35px rgba(191, 0, 255, 0.25), inset 0 0 25px rgba(191, 0, 255, 0.08);
+            transform: translateY(-3px);
+        }
+
+        .container {
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 0 40px 100px;
+        }
+
+        .category-panel {
+            display: none;
+            animation: panelFadeIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+        }
+
+        .category-panel.active {
+            display: block;
+        }
+
+        @keyframes panelFadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-wrapper {
+            background: var(--glass-bg);
+            border-radius: 28px;
+            padding: 38px;
+            backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            transition: all 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 32px;
+        }
+
+        .section-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+            background-size: 200% 100%;
+            animation: shimmerLine 3s linear infinite;
+        }
+
+        .wrapper-2d::before { --accent-color: var(--neon-orange); background: linear-gradient(90deg, var(--neon-orange), var(--neon-pink), var(--neon-orange)); }
+        .wrapper-pixi::before { --accent-color: #f59e0b; background: linear-gradient(90deg, #f59e0b, #fb923c, #f59e0b); }
+        .wrapper-konva::before { --accent-color: #ef4444; background: linear-gradient(90deg, #ef4444, #f87171, #ef4444); }
+        .wrapper-fabric::before { --accent-color: #22c55e; background: linear-gradient(90deg, #22c55e, #4ade80, #22c55e); }
+        .wrapper-two::before { --accent-color: #ec4899; background: linear-gradient(90deg, #ec4899, #f472b6, #ec4899); }
+        .wrapper-3d::before { --accent-color: var(--neon-green); background: linear-gradient(90deg, var(--neon-green), var(--neon-blue), var(--neon-green)); }
+        .wrapper-babylon::before { --accent-color: #7c4dff; background: linear-gradient(90deg, #7c4dff, #a855f7, #7c4dff); }
+        .wrapper-ai::before { --accent-color: var(--neon-purple); background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan), var(--neon-purple)); }
+
+        @keyframes shimmerLine {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .section-wrapper:hover {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 45px rgba(var(--rgb-accent), 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            transform: translateY(-5px);
+        }
+
+        .wrapper-2d:hover { --accent-color: var(--neon-orange); --rgb-accent: 255, 102, 0; }
+        .wrapper-pixi:hover { --accent-color: #f59e0b; --rgb-accent: 245, 158, 11; }
+        .wrapper-konva:hover { --accent-color: #ef4444; --rgb-accent: 239, 68, 68; }
+        .wrapper-fabric:hover { --accent-color: #22c55e; --rgb-accent: 34, 197, 94; }
+        .wrapper-two:hover { --accent-color: #ec4899; --rgb-accent: 236, 72, 153; }
+        .wrapper-3d:hover { --accent-color: var(--neon-green); --rgb-accent: 57, 255, 20; }
+        .wrapper-babylon:hover { --accent-color: #7c4dff; --rgb-accent: 124, 77, 255; }
+        .wrapper-ai:hover { --accent-color: var(--neon-purple); --rgb-accent: 191, 0, 255; }
+
+        .section-header-bar {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            margin-bottom: 26px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .section-icon-lg {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            border: 2px solid;
+            position: relative;
+        }
+
+        .icon-2d-lg {
+            background: linear-gradient(135deg, rgba(255, 102, 0, 0.15), rgba(255, 0, 110, 0.15));
+            border-color: rgba(255, 102, 0, 0.35);
+            box-shadow: 0 0 25px rgba(255, 102, 0, 0.2);
+        }
+
+        .icon-pixi-lg {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(251, 146, 60, 0.18));
+            border-color: rgba(245, 158, 11, 0.38);
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.22);
+        }
+
+        .icon-konva-lg {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.18), rgba(248, 113, 113, 0.18));
+            border-color: rgba(239, 68, 68, 0.38);
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.22);
+        }
+
+        .icon-fabric-lg {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.18), rgba(74, 222, 128, 0.18));
+            border-color: rgba(34, 197, 94, 0.38);
+            box-shadow: 0 0 25px rgba(34, 197, 94, 0.22);
+        }
+
+        .icon-two-lg {
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.18), rgba(244, 114, 182, 0.18));
+            border-color: rgba(236, 72, 153, 0.38);
+            box-shadow: 0 0 25px rgba(236, 72, 153, 0.22);
+        }
+
+        .icon-3d-lg {
+            background: linear-gradient(135deg, rgba(57, 255, 20, 0.15), rgba(0, 245, 255, 0.15));
+            border-color: rgba(57, 255, 20, 0.35);
+            box-shadow: 0 0 25px rgba(57, 255, 20, 0.2);
+        }
+
+        .icon-babylon-lg {
+            background: linear-gradient(135deg, rgba(124, 77, 255, 0.15), rgba(168, 85, 247, 0.15));
+            border-color: rgba(124, 77, 255, 0.35);
+            box-shadow: 0 0 25px rgba(124, 77, 255, 0.2);
+        }
+
+        .icon-ai-lg {
+            background: linear-gradient(135deg, rgba(191, 0, 255, 0.15), rgba(0, 245, 213, 0.15));
+            border-color: rgba(191, 0, 255, 0.35);
+            box-shadow: 0 0 25px rgba(191, 0, 255, 0.2);
+        }
+
+        .section-icon-lg::after {
+            content: '';
+            position: absolute;
+            inset: -3px;
+            border-radius: 19px;
+            border: 2px solid transparent;
+            background: linear-gradient(45deg, var(--icon-accent), transparent) border-box;
+            mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            animation: iconBorderRotate 4s linear infinite;
+        }
+
+        .icon-2d-lg { --icon-accent: var(--neon-orange); }
+        .icon-pixi-lg { --icon-accent: #f59e0b; }
+        .icon-konva-lg { --icon-accent: #ef4444; }
+        .icon-fabric-lg { --icon-accent: #22c55e; }
+        .icon-two-lg { --icon-accent: #ec4899; }
+        .icon-3d-lg { --icon-accent: var(--neon-green); }
+        .icon-babylon-lg { --icon-accent: #7c4dff; }
+        .icon-ai-lg { --icon-accent: var(--neon-purple); }
+
+        @keyframes iconBorderRotate {
+            to { transform: rotate(360deg); }
+        }
+
+        .section-title-group {
+            flex: 1;
+        }
+
+        .section-title-h2 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 6px;
+        }
+
+        .h2-2d { color: var(--neon-orange); text-shadow: 0 0 25px rgba(255, 102, 0, 0.35); }
+        .h2-pixi { color: #f59e0b; text-shadow: 0 0 25px rgba(245, 158, 11, 0.4); }
+        .h2-konva { color: #ef4444; text-shadow: 0 0 25px rgba(239, 68, 68, 0.4); }
+        .h2-fabric { color: #22c55e; text-shadow: 0 0 25px rgba(34, 197, 94, 0.4); }
+        .h2-two { color: #ec4899; text-shadow: 0 0 25px rgba(236, 72, 153, 0.4); }
+        .h2-3d { color: var(--neon-green); text-shadow: 0 0 25px rgba(57, 255, 20, 0.35); }
+        .h2-babylon { color: #7c4dff; text-shadow: 0 0 25px rgba(124, 77, 255, 0.35); }
+        .h2-ai { color: var(--neon-purple); text-shadow: 0 0 25px rgba(191, 0, 255, 0.35); }
+
+        .item-count-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 34px;
+            height: 34px;
+            padding: 0 13px;
+            border-radius: 10px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: 2px solid;
+        }
+
+        .count-2d-bdg { background: rgba(255, 102, 0, 0.1); color: var(--neon-orange); border-color: rgba(255, 102, 0, 0.35); }
+        .count-3d-bdg { background: rgba(57, 255, 20, 0.1); color: var(--neon-green); border-color: rgba(57, 255, 20, 0.35); }
+        .count-ai-bdg { background: rgba(191, 0, 255, 0.1); color: var(--neon-purple); border-color: rgba(191, 0, 255, 0.35); }
+
+        .section-desc-text {
+            color: rgba(255, 255, 255, 0.42);
+            font-size: 0.92rem;
+            line-height: 1.6;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .project-item-card {
+            background: rgba(255, 255, 255, 0.025);
+            border-radius: 18px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.42s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-item-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 18px;
+            padding: 1px;
+            background: linear-gradient(135deg, var(--card-accent), transparent 55%);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .project-item-card:hover::before { opacity: 1; }
+
+        .project-item-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            background: rgba(255, 255, 255, 0.042);
+            border-color: rgba(255, 255, 255, 0.11);
+            box-shadow: 0 22px 55px rgba(0, 0, 0, 0.32), 0 0 35px rgba(var(--card-rgb), 0.1);
+        }
+
+        .card-glow-spot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--card-accent) 0%, transparent 70%);
+            opacity: 0;
+            transition: all 0.5s ease;
+            pointer-events: none;
+            filter: blur(28px);
+        }
+
+        .project-item-card:hover .card-glow-spot {
+            width: 220px;
+            height: 220px;
+            opacity: 0.14;
+            transform: translate(-50%, -50%);
+        }
+
+        .card-top-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 18px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .card-icon-box {
+            width: 52px;
+            height: 52px;
+            border-radius: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .card-icon-box::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            border-radius: 15px;
+            background: conic-gradient(from 0deg, transparent, var(--card-accent), transparent);
+            opacity: 0;
+            z-index: -1;
+            animation: iconSpin 3s linear infinite paused;
+            filter: blur(7px);
+        }
+
+        .project-item-card:hover .card-icon-box::after {
+            opacity: 0.5;
+            animation-play-state: running;
+        }
+
+        @keyframes iconSpin {
+            to { transform: rotate(360deg); }
+        }
+
+        .project-item-card:hover .card-icon-box {
+            transform: scale(1.12) rotate(-7deg);
+            border-color: var(--card-accent);
+            box-shadow: 0 0 22px rgba(var(--card-rgb), 0.28);
+        }
+
+        .card-arrow-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            opacity: 0;
+            transform: translateX(-12px) scale(0.8);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid;
+        }
+
+        .arrow-2d-btn { background: rgba(255, 102, 0, 0.1); color: var(--neon-orange); border-color: rgba(255, 102, 0, 0.28); }
+        .arrow-3d-btn { background: rgba(57, 255, 20, 0.1); color: var(--neon-green); border-color: rgba(57, 255, 20, 0.28); }
+        .arrow-ai-btn { background: rgba(191, 0, 255, 0.1); color: var(--neon-purple); border-color: rgba(191, 0, 255, 0.28); }
+
+        .project-item-card:hover .card-arrow-btn {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+        }
+
+        .project-name-label {
+            font-size: 1.22rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #fff;
+            display: block;
+            position: relative;
+            z-index: 1;
+            letter-spacing: 0.4px;
+            transition: all 0.3s ease;
+        }
+
+        .project-item-card:hover .project-name-label {
+            color: var(--card-accent);
+            text-shadow: 0 0 25px rgba(var(--card-rgb), 0.35);
+        }
+
+        .project-desc-text {
+            color: rgba(255, 255, 255, 0.46);
+            font-size: 0.89rem;
+            line-height: 1.65;
+            margin-bottom: 18px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .project-tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .p-tag {
+            background: rgba(255, 255, 255, 0.055);
+            color: rgba(255, 255, 255, 0.8);
+            padding: 5px 12px;
+            border-radius: 9px;
+            font-size: 0.73rem;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            transition: all 0.3s ease;
+        }
+
+        .p-tag:hover {
+            background: rgba(255, 255, 255, 0.11);
+            transform: translateY(-2px);
+        }
+
+        .tag-pixi { background: rgba(255, 187, 0, 0.11); color: #ffc107; border-color: rgba(255, 193, 7, 0.24); }
+        .tag-konva { background: rgba(255, 77, 77, 0.11); color: #ff6b6b; border-color: rgba(255, 107, 107, 0.24); }
+        .tag-fabric { background: rgba(46, 213, 115, 0.11); color: #2ed573; border-color: rgba(46, 213, 115, 0.24); }
+        .tag-two { background: rgba(255, 71, 87, 0.11); color: #ff6b81; border-color: rgba(255, 71, 87, 0.24); }
+        .tag-three { background: rgba(52, 199, 89, 0.11); color: #34c759; border-color: rgba(52, 199, 89, 0.24); }
+        .tag-babylon { background: rgba(175, 82, 222, 0.11); color: #af52de; border-color: rgba(175, 82, 222, 0.24); }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 30px;
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .empty-state-icon {
+            font-size: 3.5rem;
+            margin-bottom: 18px;
+            opacity: 0.4;
+        }
+
+        .empty-state-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 65px 20px;
+            position: relative;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .footer-line {
+            width: 100px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+            margin: 0 auto 22px;
+        }
+
+        footer p {
+            color: rgba(255, 255, 255, 0.33);
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        footer a {
+            color: var(--neon-blue);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        footer a:hover {
+            color: var(--neon-purple);
+            text-shadow: 0 0 20px rgba(191, 0, 255, 0.5);
+        }
+
+        @media (max-width: 900px) {
+            .projects-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 85px 18px 48px; }
+            h1 { letter-spacing: 2px; }
+            h1 .sub-text { letter-spacing: 4px; }
+            .container { padding: 0 20px 70px; }
+            .section-wrapper { padding: 26px; border-radius: 22px; }
+            .section-header-bar { flex-direction: column; align-items: flex-start; gap: 14px; }
+            .section-icon-lg { width: 54px; height: 54px; font-size: 1.7rem; }
+            .section-title-h2 { font-size: 1.25rem; }
+            .nav-tabs { gap: 10px; margin-bottom: 35px; }
+            .nav-tab { padding: 10px 24px; font-size: 0.82rem; }
+            .projects-grid { grid-template-columns: 1fr; }
+            .card-arrow-btn { display: none; }
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(10, 15, 30, 0.5); }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--neon-blue), var(--neon-purple)); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, var(--neon-purple), var(--neon-pink)); }
+    </style>
+</head>
+<body>
+
+    <div class="bg-grid"></div>
+    <div class="bg-glow glow-1"></div>
+    <div class="bg-glow glow-2"></div>
+    <div class="bg-glow glow-3"></div>
+    <div class="bg-glow glow-4"></div>
+    <div class="scanline"></div>
+
+    <header>
+        <div class="header-badge">
+            <span>⚡</span>
+            <span>yuan 的作品集</span>
+            <span>⚡</span>
+        </div>
+        <h1>
+            <span class="main-text">图形编程</span>
+            <span class="sub-text">个人作品集</span>
+        </h1>
+        <p class="subtitle">探索 WebGL、Canvas、SVG 前沿渲染技术，打造沉浸式视觉体验与智能交互应用</p>
+    </header>
+
+    <nav class="nav-tabs">
+        <button class="nav-tab tab-2d active" data-target="panel-2d">🎨 2D 图形</button>
+        <button class="nav-tab tab-3d" data-target="panel-3d">🌐 3D 引擎</button>
+        <button class="nav-tab tab-ai" data-target="panel-ai">🤖 AI 智能</button>
+    </nav>
+
+    <div class="container">
+
+        <!-- ==================== 2D 面板 ==================== -->
+        <div id="panel-2d" class="category-panel active">
+
+            <div class="section-wrapper wrapper-pixi">
+                <div class="section-header-bar">
+                    <div class="section-icon-lg icon-pixi-lg">�</div>
+                    <div class="section-title-group">
+                        <h2 class="section-title-h2 h2-pixi">
+                            PixiJS
+                            <span class="item-count-badge count-2d-bdg">01</span>
+                        </h2>
+                        <p class="section-desc-text">WebGL 2D 渲染引擎 · 精灵系统 · 粒子特效 · 自定义着色器</p>
+                    </div>
+                </div>
+
+                <div class="projects-grid">
+
+                    <div class="project-item-card" style="--card-accent: var(--neon-orange); --card-rgb: 255, 102, 0;" onclick="window.open('2D/PixiJS/index.html', '_blank')">
+                        <div class="card-glow-spot"></div>
+                        <div class="card-top-row">
+                            <div class="card-icon-box">⚡</div>
+                            <div class="card-arrow-btn arrow-2d-btn">→</div>
+                        </div>
+                        <h3 class="project-name-label">PixiJS Template</h3>
+                        <p class="project-desc-text">高性能 WebGL 2D 渲染引擎，专为游戏开发与交互动画优化，支持精灵系统、粒子特效与纹理管理</p>
+                        <div class="project-tag-list">
+                            <span class="p-tag tag-pixi">PixiJS v7</span>
+                            <span class="p-tag">WebGL</span>
+                            <span class="p-tag">Renderer</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="section-wrapper wrapper-konva">
+                <div class="section-header-bar">
+                    <div class="section-icon-lg icon-konva-lg">⚙️</div>
+                    <div class="section-title-group">
+                        <h2 class="section-title-h2 h2-konva">
+                            Konva.js
+                            <span class="item-count-badge count-2d-bdg">01</span>
+                        </h2>
+                        <p class="section-desc-text">Canvas 动画框架 · 节点树架构 · 拖拽变换 · 滤镜管道</p>
+                    </div>
+                </div>
+
+                <div class="projects-grid">
+
+                    <div class="project-item-card" style="--card-accent: #ff4444; --card-rgb: 255, 68, 68;" onclick="window.open('2D/KonvaJS/index.html', '_blank')">
+                        <div class="card-glow-spot"></div>
+                        <div class="card-top-row">
+                            <div class="card-icon-box">🔧</div>
+                            <div class="card-arrow-btn arrow-2d-btn">→</div>
+                        </div>
+                        <h3 class="project-name-label">Konva.js Template</h3>
+                        <p class="project-desc-text">强大灵活的 Canvas 动画框架，基于节点树架构，支持拖拽变换、滤镜管道与补间动画系统</p>
+                        <div class="project-tag-list">
+                            <span class="p-tag tag-konva">Konva.js v9</span>
+                            <span class="p-tag">Canvas</span>
+                            <span class="p-tag">Animation</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="section-wrapper wrapper-fabric">
+                <div class="section-header-bar">
+                    <div class="section-icon-lg icon-fabric-lg">✏️</div>
+                    <div class="section-title-group">
+                        <h2 class="section-title-h2 h2-fabric">
+                            Fabric.js
+                            <span class="item-count-badge count-2d-bdg">01</span>
+                        </h2>
+                        <p class="section-desc-text">Canvas 对象模型库 · 自由变换 · 序列化导出 · SVG 互转</p>
+                    </div>
+                </div>
+
+                <div class="projects-grid">
+
+                    <div class="project-item-card" style="--card-accent: #00e676; --card-rgb: 0, 230, 118;" onclick="window.open('2D/FabricJS/index.html', '_blank')">
+                        <div class="card-glow-spot"></div>
+                        <div class="card-top-row">
+                            <div class="card-icon-box">🖌️</div>
+                            <div class="card-arrow-btn arrow-2d-btn">→</div>
+                        </div>
+                        <h3 class="project-name-label">Fabric.js Template</h3>
+                        <p class="project-desc-text">专业级 Canvas 对象模型库，提供完整的对象选择、自由变换、序列化导出与跨格式转换能力</p>
+                        <div class="project-tag-list">
+                            <span class="p-tag tag-fabric">Fabric.js v5</span>
+                            <span class="p-tag">Canvas</span>
+                            <span class="p-tag">Interactive</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="section-wrapper wrapper-two">
+                <div class="section-header-bar">
+                    <div class="section-icon-lg icon-two-lg">💫</div>
+                    <div class="section-title-group">
+                        <h2 class="section-title-h2 h2-two">
+                            Two.js
+                            <span class="item-count-badge count-2d-bdg">01</span>
+                        </h2>
+                        <p class="section-desc-text">SVG/Canvas 双模式渲染 · 矢量图形 API · 数学驱动动画</p>
+                    </div>
+                </div>
+
+                <div class="projects-grid">
+
+                    <div class="project-item-card" style="--card-accent: #e040fb; --card-rgb: 224, 64, 251;" onclick="window.open('2D/TwoJS/index.html', '_blank')">
+                        <div class="card-glow-spot"></div>
+                        <div class="card-top-row">
+                            <div class="card-icon-box">✨</div>
+                            <div class="card-arrow-btn arrow-2d-btn">→</div>
+                        </div>
+                        <h3 class="project-name-label">Two.js Template</h3>
+                        <p class="project-desc-text">极简优雅的双模式 2D 图形 API，同时支持 SVG 与 Canvas 双后端渲染，数学驱动的声明式动画系统</p>
+                        <div class="project-tag-list">
+                            <span class="p-tag tag-two">Two.js v0.7</span>
+                            <span class="p-tag">SVG/Canvas</span>
+                            <span class="p-tag">Vector</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ==================== 3D 面板 ==================== -->
+        <div id="panel-3d" class="category-panel">
+
+            <div class="section-wrapper wrapper-3d">
+                <div class="section-header-bar">
+                    <div class="section-icon-lg icon-3d-lg">🌍</div>
+                    <div class="section-title-group">
+                        <h2 class="section-title-h2 h2-3d">
+                            Three.js
+                            <span class="item-count-badge count-3d-bdg">01</span>
+                        </h2>
+                        <p class="section-desc-text">WebGL 渲染引擎 · 场景图系统 · PBR 材质 · 后期处理管线</p>
+                    </div>
+                </div>
+
+                <div class="projects-grid">
+
+                    <div class="project-item-card" style="--card-accent: var(--neon-green); --card-rgb: 57, 255, 20;" onclick="window.open('3D/Threejs/index.html', '_blank')">
+                        <div class="card-glow-spot"></div>
+                        <div class="card-top-row">
+                            <div class="card-icon-box">🌐</div>
+                            <div class="card-arrow-btn arrow-3d-btn">→</div>
+                        </div>
+                        <h3 class="project-name-label">Three.js Template</h3>
+                        <p class="project-desc-text">业界领先的 3D WebGL 渲染库，完整场景图体系、PBR 材质工作流与后期处理管线集成</p>
+                        <div class="project-tag-list">
+                            <span class="p-tag tag-three">Three.js r158</span>
+                            <span class="p-tag">WebGL</span>
+                            <span class="p-tag">3D Render</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="section-wrapper wrapper-babylon">
+                <div class="section-header-bar">
+                    <div class="section-icon-lg icon-babylon-lg">🎯</div>
+                    <div class="section-title-group">
+                        <h2 class="section-title-h2 h2-babylon">
+                            Babylon.js
+                            <span class="item-count-badge count-3d-bdg">01</span>
+                        </h2>
+                        <p class="section-desc-text">企业级游戏引擎 · Havok 物理 · 碰撞检测 · GUI 编辑器 · 粒子特效</p>
+                    </div>
+                </div>
+
+                <div class="projects-grid">
+
+                    <div class="project-item-card" style="--card-accent: #7c4dff; --card-rgb: 124, 77, 255;" onclick="window.open('3D/Babylonjs/index.html', '_blank')">
+                        <div class="card-glow-spot"></div>
+                        <div class="card-top-row">
+                            <div class="card-icon-box">🚀</div>
+                            <div class="card-arrow-btn arrow-3d-btn">→</div>
+                        </div>
+                        <h3 class="project-name-label">Babylon.js Template</h3>
+                        <p class="project-desc-text">功能完备的 3D 游戏引擎解决方案，内置物理引擎、碰撞检测系统与高级粒子特效框架</p>
+                        <div class="project-tag-list">
+                            <span class="p-tag tag-babylon">Babylon.js v6</span>
+                            <span class="p-tag">WebGL</span>
+                            <span class="p-tag">Game Engine</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== AI 面板 ==================== -->
+        <div id="panel-ai" class="category-panel">
+
+            <div class="section-wrapper wrapper-ai">
+                <div class="section-header-bar">
+                    <div class="section-icon-lg icon-ai-lg">🤖</div>
+                    <div class="section-title-group">
+                        <h2 class="section-title-h2 h2-ai">
+                            AI INTELLIGENCE
+                            <span class="item-count-badge count-ai-bdg">--</span>
+                        </h2>
+                        <p class="section-desc-text">机器学习 · 神经网络 · 计算机视觉 · 智能交互 · 更多精彩敬请期待...</p>
+                    </div>
+                </div>
+
+                <div class="empty-state">
+                    <div class="empty-state-icon">🚧</div>
+                    <p class="empty-state-text">COMING SOON — AI 项目正在开发中</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <div class="footer-line"></div>
+        <p>Crafted with precision using cutting-edge web graphics technologies | <a href="#">GitHub</a></p>
+    </footer>
+
+    <script>
+        const tabs = document.querySelectorAll('.nav-tab');
+        const panels = document.querySelectorAll('.category-panel');
+
+        function switchTab(targetId) {
+            tabs.forEach(t => t.classList.remove('active'));
+            panels.forEach(p => p.classList.remove('active'));
+
+            const activeTab = document.querySelector(`[data-target="${targetId}"]`);
+            const activePanel = document.getElementById(targetId);
+
+            if (activeTab) activeTab.classList.add('active');
+            if (activePanel) activePanel.classList.add('active');
+        }
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                switchTab(tab.dataset.target);
+            });
+        });
+
+        document.querySelectorAll('.project-item-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = this.getAttribute('onclick').match(/'([^']+)'/)[1];
+
+                this.style.transform = 'scale(0.96)';
+                this.style.boxShadow = 'none';
+
+                setTimeout(() => {
+                    window.open(url, '_blank');
+                    setTimeout(() => {
+                        this.style.transform = '';
+                        this.style.boxShadow = '';
+                    }, 180);
+                }, 110);
+            });
+
+            card.addEventListener('mouseenter', () => {
+                this.style.transition = 'all 0.42s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+            });
+        });
+
+        let lastScrollY = 0;
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+            const headerEl = document.querySelector('header');
+
+            if (currentScroll > lastScrollY && currentScroll > 140) {
+                headerEl.style.opacity = '0.58';
+                headerEl.style.transform = 'scale(0.96) translateY(-18px)';
+            } else {
+                headerEl.style.opacity = '1';
+                headerEl.style.transform = 'scale(1) translateY(0)';
+            }
+
+            lastScrollY = currentScroll <= 0 ? 0 : currentScroll;
+        }, { passive: true });
+
+        const observerConfig = { threshold: 0.1, rootMargin: '-40px' };
+        const sectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && entry.target.classList.contains('active')) {
+                    entry.target.querySelectorAll('.section-wrapper').forEach((wrap, idx) => {
+                        wrap.style.opacity = '0';
+                        wrap.style.transform = 'translateY(35px)';
+                        wrap.style.transition = `all 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) ${idx * 0.12}s`;
+                        
+                        setTimeout(() => {
+                            wrap.style.opacity = '1';
+                            wrap.style.transform = 'translateY(0)';
+                        }, 80 + idx * 120);
+                    });
+                }
+            });
+        }, observerConfig);
+
+        panels.forEach(panel => sectionObserver.observe(panel));
+
+        document.addEventListener('mousemove', (e) => {
+            const glows = document.querySelectorAll('.bg-glow');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+
+            glows[0].style.transform = `translate(${x * 50}px, ${y * 50}px)`;
+            glows[1].style.transform = `translate(${-x * 50}px, ${-y * 50}px)`;
+        });
+    </script>
+</body>
+</html>
