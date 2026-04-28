@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -48,8 +49,13 @@
         }
 
         @keyframes gridMove {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(60px, 60px); }
+            0% {
+                transform: translate(0, 0);
+            }
+
+            100% {
+                transform: translate(60px, 60px);
+            }
         }
 
         .bg-glow {
@@ -94,43 +100,61 @@
         }
 
         @keyframes floatGlow1 {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(80px, 40px) scale(1.1); }
-            66% { transform: translate(-40px, 80px) scale(0.95); }
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            33% {
+                transform: translate(80px, 40px) scale(1.1);
+            }
+
+            66% {
+                transform: translate(-40px, 80px) scale(0.95);
+            }
         }
 
         @keyframes floatGlow2 {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(-60px, -40px) scale(1.05); }
-            66% { transform: translate(40px, -80px) scale(1.1); }
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            33% {
+                transform: translate(-60px, -40px) scale(1.05);
+            }
+
+            66% {
+                transform: translate(40px, -80px) scale(1.1);
+            }
         }
 
         @keyframes pulseGlow {
-            0%, 100% { opacity: 0.15; transform: translate(-50%, -50%) scale(1); }
-            50% { opacity: 0.25; transform: translate(-50%, -50%) scale(1.3); }
+
+            0%,
+            100% {
+                opacity: 0.15;
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            50% {
+                opacity: 0.25;
+                transform: translate(-50%, -50%) scale(1.3);
+            }
         }
 
         @keyframes floatGlow3 {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            50% { transform: translate(60px, -50px) scale(1.08); }
-        }
 
-        .scanline {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
-            z-index: 9999;
-            animation: scanMove 4s linear infinite;
-            opacity: 0.6;
-            pointer-events: none;
-        }
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
 
-        @keyframes scanMove {
-            0% { top: -4px; }
-            100% { top: 100%; }
+            50% {
+                transform: translate(60px, -50px) scale(1.08);
+            }
         }
 
         header {
@@ -158,8 +182,15 @@
         }
 
         @keyframes badgePulse {
-            0%, 100% { box-shadow: 0 0 20px rgba(0, 245, 255, 0.2), inset 0 0 20px rgba(0, 245, 255, 0.05); }
-            50% { box-shadow: 0 0 35px rgba(0, 245, 255, 0.4), inset 0 0 25px rgba(0, 245, 255, 0.08); }
+
+            0%,
+            100% {
+                box-shadow: 0 0 20px rgba(0, 245, 255, 0.2), inset 0 0 20px rgba(0, 245, 255, 0.05);
+            }
+
+            50% {
+                box-shadow: 0 0 35px rgba(0, 245, 255, 0.4), inset 0 0 25px rgba(0, 245, 255, 0.08);
+            }
         }
 
         h1 {
@@ -269,6 +300,23 @@
             transform: translateY(-3px);
         }
 
+        .tab-gpu {
+            background: rgba(0, 245, 255, 0.06);
+            color: var(--neon-blue);
+            border-color: rgba(0, 245, 255, 0.25);
+        }
+
+        .tab-gpu::before {
+            background: linear-gradient(135deg, rgba(0, 245, 255, 0.15), rgba(168, 85, 247, 0.1));
+        }
+
+        .tab-gpu:hover,
+        .tab-gpu.active {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 35px rgba(0, 245, 255, 0.25), inset 0 0 25px rgba(0, 245, 255, 0.08);
+            transform: translateY(-3px);
+        }
+
         .tab-ai {
             background: rgba(191, 0, 255, 0.06);
             color: var(--neon-purple);
@@ -302,8 +350,15 @@
         }
 
         @keyframes panelFadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .section-wrapper {
@@ -330,18 +385,64 @@
             animation: shimmerLine 3s linear infinite;
         }
 
-        .wrapper-2d::before { --accent-color: var(--neon-orange); background: linear-gradient(90deg, var(--neon-orange), var(--neon-pink), var(--neon-orange)); }
-        .wrapper-pixi::before { --accent-color: #f59e0b; background: linear-gradient(90deg, #f59e0b, #fb923c, #f59e0b); }
-        .wrapper-konva::before { --accent-color: #ef4444; background: linear-gradient(90deg, #ef4444, #f87171, #ef4444); }
-        .wrapper-fabric::before { --accent-color: #22c55e; background: linear-gradient(90deg, #22c55e, #4ade80, #22c55e); }
-        .wrapper-two::before { --accent-color: #ec4899; background: linear-gradient(90deg, #ec4899, #f472b6, #ec4899); }
-        .wrapper-3d::before { --accent-color: var(--neon-green); background: linear-gradient(90deg, var(--neon-green), var(--neon-blue), var(--neon-green)); }
-        .wrapper-babylon::before { --accent-color: #7c4dff; background: linear-gradient(90deg, #7c4dff, #a855f7, #7c4dff); }
-        .wrapper-ai::before { --accent-color: var(--neon-purple); background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan), var(--neon-purple)); }
+        .wrapper-2d::before {
+            --accent-color: var(--neon-orange);
+            background: linear-gradient(90deg, var(--neon-orange), var(--neon-pink), var(--neon-orange));
+        }
+
+        .wrapper-pixi::before {
+            --accent-color: #f59e0b;
+            background: linear-gradient(90deg, #f59e0b, #fb923c, #f59e0b);
+        }
+
+        .wrapper-konva::before {
+            --accent-color: #ef4444;
+            background: linear-gradient(90deg, #ef4444, #f87171, #ef4444);
+        }
+
+        .wrapper-fabric::before {
+            --accent-color: #22c55e;
+            background: linear-gradient(90deg, #22c55e, #4ade80, #22c55e);
+        }
+
+        .wrapper-two::before {
+            --accent-color: #ec4899;
+            background: linear-gradient(90deg, #ec4899, #f472b6, #ec4899);
+        }
+
+        .wrapper-3d::before {
+            --accent-color: var(--neon-green);
+            background: linear-gradient(90deg, var(--neon-green), var(--neon-blue), var(--neon-green));
+        }
+
+        .wrapper-babylon::before {
+            --accent-color: #7c4dff;
+            background: linear-gradient(90deg, #7c4dff, #a855f7, #7c4dff);
+        }
+
+        .wrapper-webgl::before {
+            --accent-color: #00f5ff;
+            background: linear-gradient(90deg, #00f5ff, #00bcd4, #00f5ff);
+        }
+
+        .wrapper-webgpu::before {
+            --accent-color: #a855f7;
+            background: linear-gradient(90deg, #a855f7, #d946ef, #a855f7);
+        }
+
+        .wrapper-ai::before {
+            --accent-color: var(--neon-purple);
+            background: linear-gradient(90deg, var(--neon-purple), var(--neon-cyan), var(--neon-purple));
+        }
 
         @keyframes shimmerLine {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
+            0% {
+                background-position: -200% 0;
+            }
+
+            100% {
+                background-position: 200% 0;
+            }
         }
 
         .section-wrapper:hover {
@@ -350,14 +451,55 @@
             transform: translateY(-5px);
         }
 
-        .wrapper-2d:hover { --accent-color: var(--neon-orange); --rgb-accent: 255, 102, 0; }
-        .wrapper-pixi:hover { --accent-color: #f59e0b; --rgb-accent: 245, 158, 11; }
-        .wrapper-konva:hover { --accent-color: #ef4444; --rgb-accent: 239, 68, 68; }
-        .wrapper-fabric:hover { --accent-color: #22c55e; --rgb-accent: 34, 197, 94; }
-        .wrapper-two:hover { --accent-color: #ec4899; --rgb-accent: 236, 72, 153; }
-        .wrapper-3d:hover { --accent-color: var(--neon-green); --rgb-accent: 57, 255, 20; }
-        .wrapper-babylon:hover { --accent-color: #7c4dff; --rgb-accent: 124, 77, 255; }
-        .wrapper-ai:hover { --accent-color: var(--neon-purple); --rgb-accent: 191, 0, 255; }
+        .wrapper-2d:hover {
+            --accent-color: var(--neon-orange);
+            --rgb-accent: 255, 102, 0;
+        }
+
+        .wrapper-pixi:hover {
+            --accent-color: #f59e0b;
+            --rgb-accent: 245, 158, 11;
+        }
+
+        .wrapper-konva:hover {
+            --accent-color: #ef4444;
+            --rgb-accent: 239, 68, 68;
+        }
+
+        .wrapper-fabric:hover {
+            --accent-color: #22c55e;
+            --rgb-accent: 34, 197, 94;
+        }
+
+        .wrapper-two:hover {
+            --accent-color: #ec4899;
+            --rgb-accent: 236, 72, 153;
+        }
+
+        .wrapper-3d:hover {
+            --accent-color: var(--neon-green);
+            --rgb-accent: 57, 255, 20;
+        }
+
+        .wrapper-babylon:hover {
+            --accent-color: #7c4dff;
+            --rgb-accent: 124, 77, 255;
+        }
+
+        .wrapper-webgl:hover {
+            --accent-color: #00f5ff;
+            --rgb-accent: 0, 245, 255;
+        }
+
+        .wrapper-webgpu:hover {
+            --accent-color: #a855f7;
+            --rgb-accent: 168, 85, 247;
+        }
+
+        .wrapper-ai:hover {
+            --accent-color: var(--neon-purple);
+            --rgb-accent: 191, 0, 255;
+        }
 
         .section-header-bar {
             display: flex;
@@ -422,6 +564,18 @@
             box-shadow: 0 0 25px rgba(124, 77, 255, 0.2);
         }
 
+        .icon-webgl-lg {
+            background: linear-gradient(135deg, rgba(0, 245, 255, 0.18), rgba(0, 188, 212, 0.18));
+            border-color: rgba(0, 245, 255, 0.38);
+            box-shadow: 0 0 25px rgba(0, 245, 255, 0.22);
+        }
+
+        .icon-webgpu-lg {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.18), rgba(217, 70, 239, 0.18));
+            border-color: rgba(168, 85, 247, 0.38);
+            box-shadow: 0 0 25px rgba(168, 85, 247, 0.22);
+        }
+
         .icon-ai-lg {
             background: linear-gradient(135deg, rgba(191, 0, 255, 0.15), rgba(0, 245, 213, 0.15));
             border-color: rgba(191, 0, 255, 0.35);
@@ -441,17 +595,50 @@
             animation: iconBorderRotate 4s linear infinite;
         }
 
-        .icon-2d-lg { --icon-accent: var(--neon-orange); }
-        .icon-pixi-lg { --icon-accent: #f59e0b; }
-        .icon-konva-lg { --icon-accent: #ef4444; }
-        .icon-fabric-lg { --icon-accent: #22c55e; }
-        .icon-two-lg { --icon-accent: #ec4899; }
-        .icon-3d-lg { --icon-accent: var(--neon-green); }
-        .icon-babylon-lg { --icon-accent: #7c4dff; }
-        .icon-ai-lg { --icon-accent: var(--neon-purple); }
+        .icon-2d-lg {
+            --icon-accent: var(--neon-orange);
+        }
+
+        .icon-pixi-lg {
+            --icon-accent: #f59e0b;
+        }
+
+        .icon-konva-lg {
+            --icon-accent: #ef4444;
+        }
+
+        .icon-fabric-lg {
+            --icon-accent: #22c55e;
+        }
+
+        .icon-two-lg {
+            --icon-accent: #ec4899;
+        }
+
+        .icon-3d-lg {
+            --icon-accent: var(--neon-green);
+        }
+
+        .icon-babylon-lg {
+            --icon-accent: #7c4dff;
+        }
+
+        .icon-webgl-lg {
+            --icon-accent: #00f5ff;
+        }
+
+        .icon-webgpu-lg {
+            --icon-accent: #a855f7;
+        }
+
+        .icon-ai-lg {
+            --icon-accent: var(--neon-purple);
+        }
 
         @keyframes iconBorderRotate {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .section-title-group {
@@ -469,14 +656,55 @@
             margin-bottom: 6px;
         }
 
-        .h2-2d { color: var(--neon-orange); text-shadow: 0 0 25px rgba(255, 102, 0, 0.35); }
-        .h2-pixi { color: #f59e0b; text-shadow: 0 0 25px rgba(245, 158, 11, 0.4); }
-        .h2-konva { color: #ef4444; text-shadow: 0 0 25px rgba(239, 68, 68, 0.4); }
-        .h2-fabric { color: #22c55e; text-shadow: 0 0 25px rgba(34, 197, 94, 0.4); }
-        .h2-two { color: #ec4899; text-shadow: 0 0 25px rgba(236, 72, 153, 0.4); }
-        .h2-3d { color: var(--neon-green); text-shadow: 0 0 25px rgba(57, 255, 20, 0.35); }
-        .h2-babylon { color: #7c4dff; text-shadow: 0 0 25px rgba(124, 77, 255, 0.35); }
-        .h2-ai { color: var(--neon-purple); text-shadow: 0 0 25px rgba(191, 0, 255, 0.35); }
+        .h2-2d {
+            color: var(--neon-orange);
+            text-shadow: 0 0 25px rgba(255, 102, 0, 0.35);
+        }
+
+        .h2-pixi {
+            color: #f59e0b;
+            text-shadow: 0 0 25px rgba(245, 158, 11, 0.4);
+        }
+
+        .h2-konva {
+            color: #ef4444;
+            text-shadow: 0 0 25px rgba(239, 68, 68, 0.4);
+        }
+
+        .h2-fabric {
+            color: #22c55e;
+            text-shadow: 0 0 25px rgba(34, 197, 94, 0.4);
+        }
+
+        .h2-two {
+            color: #ec4899;
+            text-shadow: 0 0 25px rgba(236, 72, 153, 0.4);
+        }
+
+        .h2-3d {
+            color: var(--neon-green);
+            text-shadow: 0 0 25px rgba(57, 255, 20, 0.35);
+        }
+
+        .h2-babylon {
+            color: #7c4dff;
+            text-shadow: 0 0 25px rgba(124, 77, 255, 0.35);
+        }
+
+        .h2-webgl {
+            color: #00f5ff;
+            text-shadow: 0 0 25px rgba(0, 245, 255, 0.4);
+        }
+
+        .h2-webgpu {
+            color: #a855f7;
+            text-shadow: 0 0 25px rgba(168, 85, 247, 0.4);
+        }
+
+        .h2-ai {
+            color: var(--neon-purple);
+            text-shadow: 0 0 25px rgba(191, 0, 255, 0.35);
+        }
 
         .item-count-badge {
             display: inline-flex;
@@ -492,9 +720,29 @@
             border: 2px solid;
         }
 
-        .count-2d-bdg { background: rgba(255, 102, 0, 0.1); color: var(--neon-orange); border-color: rgba(255, 102, 0, 0.35); }
-        .count-3d-bdg { background: rgba(57, 255, 20, 0.1); color: var(--neon-green); border-color: rgba(57, 255, 20, 0.35); }
-        .count-ai-bdg { background: rgba(191, 0, 255, 0.1); color: var(--neon-purple); border-color: rgba(191, 0, 255, 0.35); }
+        .count-2d-bdg {
+            background: rgba(255, 102, 0, 0.1);
+            color: var(--neon-orange);
+            border-color: rgba(255, 102, 0, 0.35);
+        }
+
+        .count-3d-bdg {
+            background: rgba(57, 255, 20, 0.1);
+            color: var(--neon-green);
+            border-color: rgba(57, 255, 20, 0.35);
+        }
+
+        .count-gpu-bdg {
+            background: rgba(0, 245, 255, 0.1);
+            color: var(--neon-blue);
+            border-color: rgba(0, 245, 255, 0.35);
+        }
+
+        .count-ai-bdg {
+            background: rgba(191, 0, 255, 0.1);
+            color: var(--neon-purple);
+            border-color: rgba(191, 0, 255, 0.35);
+        }
 
         .section-desc-text {
             color: rgba(255, 255, 255, 0.42);
@@ -533,7 +781,9 @@
             transition: opacity 0.4s ease;
         }
 
-        .project-item-card:hover::before { opacity: 1; }
+        .project-item-card:hover::before {
+            opacity: 1;
+        }
 
         .project-item-card:hover {
             transform: translateY(-10px) scale(1.02);
@@ -604,7 +854,9 @@
         }
 
         @keyframes iconSpin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .project-item-card:hover .card-icon-box {
@@ -628,9 +880,29 @@
             border: 2px solid;
         }
 
-        .arrow-2d-btn { background: rgba(255, 102, 0, 0.1); color: var(--neon-orange); border-color: rgba(255, 102, 0, 0.28); }
-        .arrow-3d-btn { background: rgba(57, 255, 20, 0.1); color: var(--neon-green); border-color: rgba(57, 255, 20, 0.28); }
-        .arrow-ai-btn { background: rgba(191, 0, 255, 0.1); color: var(--neon-purple); border-color: rgba(191, 0, 255, 0.28); }
+        .arrow-2d-btn {
+            background: rgba(255, 102, 0, 0.1);
+            color: var(--neon-orange);
+            border-color: rgba(255, 102, 0, 0.28);
+        }
+
+        .arrow-3d-btn {
+            background: rgba(57, 255, 20, 0.1);
+            color: var(--neon-green);
+            border-color: rgba(57, 255, 20, 0.28);
+        }
+
+        .arrow-gpu-btn {
+            background: rgba(0, 245, 255, 0.1);
+            color: var(--neon-blue);
+            border-color: rgba(0, 245, 255, 0.28);
+        }
+
+        .arrow-ai-btn {
+            background: rgba(191, 0, 255, 0.1);
+            color: var(--neon-purple);
+            border-color: rgba(191, 0, 255, 0.28);
+        }
 
         .project-item-card:hover .card-arrow-btn {
             opacity: 1;
@@ -687,12 +959,59 @@
             transform: translateY(-2px);
         }
 
-        .tag-pixi { background: rgba(255, 187, 0, 0.11); color: #ffc107; border-color: rgba(255, 193, 7, 0.24); }
-        .tag-konva { background: rgba(255, 77, 77, 0.11); color: #ff6b6b; border-color: rgba(255, 107, 107, 0.24); }
-        .tag-fabric { background: rgba(46, 213, 115, 0.11); color: #2ed573; border-color: rgba(46, 213, 115, 0.24); }
-        .tag-two { background: rgba(255, 71, 87, 0.11); color: #ff6b81; border-color: rgba(255, 71, 87, 0.24); }
-        .tag-three { background: rgba(52, 199, 89, 0.11); color: #34c759; border-color: rgba(52, 199, 89, 0.24); }
-        .tag-babylon { background: rgba(175, 82, 222, 0.11); color: #af52de; border-color: rgba(175, 82, 222, 0.24); }
+        .tag-pixi {
+            background: rgba(255, 187, 0, 0.11);
+            color: #ffc107;
+            border-color: rgba(255, 193, 7, 0.24);
+        }
+
+        .tag-konva {
+            background: rgba(255, 77, 77, 0.11);
+            color: #ff6b6b;
+            border-color: rgba(255, 107, 107, 0.24);
+        }
+
+        .tag-fabric {
+            background: rgba(46, 213, 115, 0.11);
+            color: #2ed573;
+            border-color: rgba(46, 213, 115, 0.24);
+        }
+
+        .tag-two {
+            background: rgba(255, 71, 87, 0.11);
+            color: #ff6b81;
+            border-color: rgba(255, 71, 87, 0.24);
+        }
+
+        .tag-three {
+            background: rgba(52, 199, 89, 0.11);
+            color: #34c759;
+            border-color: rgba(52, 199, 89, 0.24);
+        }
+
+        .tag-babylon {
+            background: rgba(175, 82, 222, 0.11);
+            color: #af52de;
+            border-color: rgba(175, 82, 222, 0.24);
+        }
+
+        .tag-webgl {
+            background: rgba(0, 245, 255, 0.11);
+            color: #00f5ff;
+            border-color: rgba(0, 245, 255, 0.24);
+        }
+
+        .tag-webgpu {
+            background: rgba(168, 85, 247, 0.11);
+            color: #a855f7;
+            border-color: rgba(168, 85, 247, 0.24);
+        }
+
+        .tag-ai {
+            background: rgba(191, 0, 255, 0.11);
+            color: var(--neon-purple);
+            border-color: rgba(191, 0, 255, 0.24);
+        }
 
         .empty-state {
             text-align: center;
@@ -717,31 +1036,108 @@
             padding: 65px 20px;
             position: relative;
             border-top: 1px solid rgba(255, 255, 255, 0.04);
+            background: rgba(5, 5, 15, 0.6);
+            backdrop-filter: blur(20px);
         }
 
         .footer-line {
-            width: 100px;
+            width: 120px;
             height: 2px;
-            background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
-            margin: 0 auto 22px;
+            background: linear-gradient(90deg, transparent, var(--neon-blue), var(--neon-purple), transparent);
+            margin: 0 auto 30px;
         }
 
-        footer p {
-            color: rgba(255, 255, 255, 0.33);
-            font-size: 0.9rem;
-            letter-spacing: 1px;
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            gap: 32px;
+            align-items: center;
         }
 
-        footer a {
-            color: var(--neon-blue);
-            text-decoration: none;
+        .footer-author {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .author-name {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        .author-title {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.45);
+            letter-spacing: 2px;
+        }
+
+        .footer-contact {
+            display: flex;
+            gap: 32px;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 24px 32px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+        }
+
+        .contact-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            min-width: 150px;
+            padding: 16px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 14px;
+            transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .contact-item:hover {
+            background: rgba(0, 245, 255, 0.08);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 245, 255, 0.12);
+        }
+
+        .contact-icon {
+            font-size: 1.6rem;
+        }
+
+        .contact-label {
+            color: rgba(255, 255, 255, 0.45);
+            font-size: 0.85rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .contact-value {
+            color: #fff;
+            font-size: 0.95rem;
             font-weight: 600;
-            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+            text-decoration: none;
+            transition: color 0.3s ease;
         }
 
-        footer a:hover {
-            color: var(--neon-purple);
-            text-shadow: 0 0 20px rgba(191, 0, 255, 0.5);
+        .contact-value:hover {
+            color: var(--neon-blue);
+            text-shadow: 0 0 15px rgba(0, 245, 255, 0.4);
+        }
+
+        .footer-copyright {
+            margin-top: 10px;
+        }
+
+        .footer-copyright p {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.85rem;
+            letter-spacing: 1.5px;
         }
 
         @media (max-width: 900px) {
@@ -751,26 +1147,81 @@
         }
 
         @media (max-width: 768px) {
-            header { padding: 85px 18px 48px; }
-            h1 { letter-spacing: 2px; }
-            h1 .sub-text { letter-spacing: 4px; }
-            .container { padding: 0 20px 70px; }
-            .section-wrapper { padding: 26px; border-radius: 22px; }
-            .section-header-bar { flex-direction: column; align-items: flex-start; gap: 14px; }
-            .section-icon-lg { width: 54px; height: 54px; font-size: 1.7rem; }
-            .section-title-h2 { font-size: 1.25rem; }
-            .nav-tabs { gap: 10px; margin-bottom: 35px; }
-            .nav-tab { padding: 10px 24px; font-size: 0.82rem; }
-            .projects-grid { grid-template-columns: 1fr; }
-            .card-arrow-btn { display: none; }
+            header {
+                padding: 85px 18px 48px;
+            }
+
+            h1 {
+                letter-spacing: 2px;
+            }
+
+            h1 .sub-text {
+                letter-spacing: 4px;
+            }
+
+            .container {
+                padding: 0 20px 70px;
+            }
+
+            .section-wrapper {
+                padding: 26px;
+                border-radius: 22px;
+            }
+
+            .section-header-bar {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 14px;
+            }
+
+            .section-icon-lg {
+                width: 54px;
+                height: 54px;
+                font-size: 1.7rem;
+            }
+
+            .section-title-h2 {
+                font-size: 1.25rem;
+            }
+
+            .nav-tabs {
+                gap: 10px;
+                margin-bottom: 35px;
+            }
+
+            .nav-tab {
+                padding: 10px 24px;
+                font-size: 0.82rem;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-arrow-btn {
+                display: none;
+            }
         }
 
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: rgba(10, 15, 30, 0.5); }
-        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--neon-blue), var(--neon-purple)); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: linear-gradient(180deg, var(--neon-purple), var(--neon-pink)); }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(10, 15, 30, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, var(--neon-blue), var(--neon-purple));
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, var(--neon-purple), var(--neon-pink));
+        }
     </style>
 </head>
+
 <body>
 
     <div class="bg-grid"></div>
@@ -778,8 +1229,6 @@
     <div class="bg-glow glow-2"></div>
     <div class="bg-glow glow-3"></div>
     <div class="bg-glow glow-4"></div>
-    <div class="scanline"></div>
-
     <header>
         <div class="header-badge">
             <span>⚡</span>
@@ -794,6 +1243,7 @@
     </header>
 
     <nav class="nav-tabs">
+        <button class="nav-tab tab-gpu" data-target="panel-gpu">⚡ WebGL/WebGPU</button>
         <button class="nav-tab tab-2d active" data-target="panel-2d">🎨 2D 图形</button>
         <button class="nav-tab tab-3d" data-target="panel-3d">🌐 3D 引擎</button>
         <button class="nav-tab tab-ai" data-target="panel-ai">🤖 AI 智能</button>
@@ -818,7 +1268,8 @@
 
                 <div class="projects-grid">
 
-                    <div class="project-item-card" style="--card-accent: var(--neon-orange); --card-rgb: 255, 102, 0;" onclick="window.open('2D/PixiJS/index.html', '_blank')">
+                    <div class="project-item-card" style="--card-accent: var(--neon-orange); --card-rgb: 255, 102, 0;"
+                        onclick="window.open('2D/PixiJS/index.html', '_blank')">
                         <div class="card-glow-spot"></div>
                         <div class="card-top-row">
                             <div class="card-icon-box">⚡</div>
@@ -850,7 +1301,8 @@
 
                 <div class="projects-grid">
 
-                    <div class="project-item-card" style="--card-accent: #ff4444; --card-rgb: 255, 68, 68;" onclick="window.open('2D/KonvaJS/index.html', '_blank')">
+                    <div class="project-item-card" style="--card-accent: #ff4444; --card-rgb: 255, 68, 68;"
+                        onclick="window.open('2D/KonvaJS/index.html', '_blank')">
                         <div class="card-glow-spot"></div>
                         <div class="card-top-row">
                             <div class="card-icon-box">🔧</div>
@@ -882,7 +1334,8 @@
 
                 <div class="projects-grid">
 
-                    <div class="project-item-card" style="--card-accent: #00e676; --card-rgb: 0, 230, 118;" onclick="window.open('2D/FabricJS/index.html', '_blank')">
+                    <div class="project-item-card" style="--card-accent: #00e676; --card-rgb: 0, 230, 118;"
+                        onclick="window.open('2D/FabricJS/index.html', '_blank')">
                         <div class="card-glow-spot"></div>
                         <div class="card-top-row">
                             <div class="card-icon-box">🖌️</div>
@@ -914,7 +1367,8 @@
 
                 <div class="projects-grid">
 
-                    <div class="project-item-card" style="--card-accent: #e040fb; --card-rgb: 224, 64, 251;" onclick="window.open('2D/TwoJS/index.html', '_blank')">
+                    <div class="project-item-card" style="--card-accent: #e040fb; --card-rgb: 224, 64, 251;"
+                        onclick="window.open('2D/TwoJS/index.html', '_blank')">
                         <div class="card-glow-spot"></div>
                         <div class="card-top-row">
                             <div class="card-icon-box">✨</div>
@@ -951,7 +1405,8 @@
 
                 <div class="projects-grid">
 
-                    <div class="project-item-card" style="--card-accent: var(--neon-green); --card-rgb: 57, 255, 20;" onclick="window.open('3D/Threejs/index.html', '_blank')">
+                    <div class="project-item-card" style="--card-accent: var(--neon-green); --card-rgb: 57, 255, 20;"
+                        onclick="window.open('3D/Threejs/index.html', '_blank')">
                         <div class="card-glow-spot"></div>
                         <div class="card-top-row">
                             <div class="card-icon-box">🌐</div>
@@ -983,7 +1438,8 @@
 
                 <div class="projects-grid">
 
-                    <div class="project-item-card" style="--card-accent: #7c4dff; --card-rgb: 124, 77, 255;" onclick="window.open('3D/Babylonjs/index.html', '_blank')">
+                    <div class="project-item-card" style="--card-accent: #7c4dff; --card-rgb: 124, 77, 255;"
+                        onclick="window.open('3D/Babylonjs/index.html', '_blank')">
                         <div class="card-glow-spot"></div>
                         <div class="card-top-row">
                             <div class="card-icon-box">🚀</div>
@@ -1002,24 +1458,109 @@
             </div>
         </div>
 
+        <!-- ==================== GPU 原生面板 ==================== -->
+        <div id="panel-gpu" class="category-panel">
+
+            <div class="section-wrapper wrapper-webgl">
+                <div class="section-header-bar">
+                    <div class="section-icon-lg icon-webgl-lg">⚡</div>
+                    <div class="section-title-group">
+                        <h2 class="section-title-h2 h2-webgl">
+                            WebGL
+                            <span class="item-count-badge count-gpu-bdg">01</span>
+                        </h2>
+                        <p class="section-desc-text">原生 WebGL 2.0 · 着色器编程 · 图形管线 · 3D 渲染基础</p>
+                    </div>
+                </div>
+
+                <div class="projects-grid">
+
+                    <div class="project-item-card" style="--card-accent: #00f5ff; --card-rgb: 0, 245, 255;"
+                        onclick="window.open('WebGL/index.html', '_blank')">
+                        <div class="card-glow-spot"></div>
+                        <div class="card-top-row">
+                            <div class="card-icon-box">🎯</div>
+                            <div class="card-arrow-btn arrow-gpu-btn">→</div>
+                        </div>
+                        <h3 class="project-name-label">WebGL 2.0 Template</h3>
+                        <p class="project-desc-text">原生 WebGL 2.0 渲染演示，包含自定义着色器、矩阵变换、三角形绘制等核心功能</p>
+                        <div class="project-tag-list">
+                            <span class="p-tag tag-webgl">WebGL 2.0</span>
+                            <span class="p-tag">Shader</span>
+                            <span class="p-tag">GPU</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="section-wrapper wrapper-webgpu">
+                <div class="section-header-bar">
+                    <div class="section-icon-lg icon-webgpu-lg">🔮</div>
+                    <div class="section-title-group">
+                        <h2 class="section-title-h2 h2-webgpu">
+                            WebGPU
+                            <span class="item-count-badge count-gpu-bdg">01</span>
+                        </h2>
+                        <p class="section-desc-text">下一代 Web 图形 API · 显式 GPU 控制 · 现代渲染管线 · 计算着色器</p>
+                    </div>
+                </div>
+
+                <div class="projects-grid">
+
+                    <div class="project-item-card" style="--card-accent: #a855f7; --card-rgb: 168, 85, 247;"
+                        onclick="window.open('WebGPU/index.html', '_blank')">
+                        <div class="card-glow-spot"></div>
+                        <div class="card-top-row">
+                            <div class="card-icon-box">✨</div>
+                            <div class="card-arrow-btn arrow-gpu-btn">→</div>
+                        </div>
+                        <h3 class="project-name-label">WebGPU Template</h3>
+                        <p class="project-desc-text">WebGPU 基础渲染演示，展示下一代 Web 图形 API 的核心概念和渲染流程</p>
+                        <div class="project-tag-list">
+                            <span class="p-tag tag-webgpu">WebGPU</span>
+                            <span class="p-tag">Modern API</span>
+                            <span class="p-tag">GPU</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
         <!-- ==================== AI 面板 ==================== -->
         <div id="panel-ai" class="category-panel">
 
             <div class="section-wrapper wrapper-ai">
                 <div class="section-header-bar">
-                    <div class="section-icon-lg icon-ai-lg">🤖</div>
+                    <div class="section-icon-lg icon-ai-lg">🔄</div>
                     <div class="section-title-group">
                         <h2 class="section-title-h2 h2-ai">
-                            AI INTELLIGENCE
-                            <span class="item-count-badge count-ai-bdg">--</span>
+                            Transform
+                            <span class="item-count-badge count-ai-bdg">01</span>
                         </h2>
-                        <p class="section-desc-text">机器学习 · 神经网络 · 计算机视觉 · 智能交互 · 更多精彩敬请期待...</p>
+                        <p class="section-desc-text">矩阵变换 · 数据归一化 · 颜色空间转换 · 文本向量化 · 特征映射</p>
                     </div>
                 </div>
 
-                <div class="empty-state">
-                    <div class="empty-state-icon">🚧</div>
-                    <p class="empty-state-text">COMING SOON — AI 项目正在开发中</p>
+                <div class="projects-grid">
+
+                    <div class="project-item-card" style="--card-accent: var(--neon-purple); --card-rgb: 191, 0, 255;"
+                        onclick="window.open('AI/index.html', '_blank')">
+                        <div class="card-glow-spot"></div>
+                        <div class="card-top-row">
+                            <div class="card-icon-box">🧠</div>
+                            <div class="card-arrow-btn arrow-ai-btn">→</div>
+                        </div>
+                        <h3 class="project-name-label">AI Transform Lab</h3>
+                        <p class="project-desc-text">探索几何变换、矩阵运算、颜色空间转换、文本向量化与数据归一化等 AI 基础技术</p>
+                        <div class="project-tag-list">
+                            <span class="p-tag tag-ai">Transform</span>
+                            <span class="p-tag">Matrix</span>
+                            <span class="p-tag">AI/ML</span>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -1028,7 +1569,32 @@
 
     <footer>
         <div class="footer-line"></div>
-        <p>Crafted with precision using cutting-edge web graphics technologies | <a href="#">GitHub</a></p>
+        <div class="footer-content">
+            <div class="footer-author">
+                <span class="author-name">Graphics Dev</span>
+                <span class="author-title">Visual Engineer</span>
+            </div>
+            <div class="footer-contact">
+                <div class="contact-item">
+                    <span class="contact-icon">✉️</span>
+                    <span class="contact-label">邮箱</span>
+                    <a href="mailto:dev@graphics-lab.dev" class="contact-value">dev@graphics-lab.dev</a>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-icon">📱</span>
+                    <span class="contact-label">手机</span>
+                    <span class="contact-value">138-8888-8888</span>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-icon">💬</span>
+                    <span class="contact-label">微信</span>
+                    <span class="contact-value">Graphics_Dev_2024</span>
+                </div>
+            </div>
+            <div class="footer-copyright">
+                <p>© 2024 Graphics Lab. All rights reserved.</p>
+            </div>
+        </div>
     </footer>
 
     <script>
@@ -1053,7 +1619,7 @@
         });
 
         document.querySelectorAll('.project-item-card').forEach(card => {
-            card.addEventListener('click', function(e) {
+            card.addEventListener('click', function (e) {
                 e.preventDefault();
                 const url = this.getAttribute('onclick').match(/'([^']+)'/)[1];
 
@@ -1098,7 +1664,7 @@
                         wrap.style.opacity = '0';
                         wrap.style.transform = 'translateY(35px)';
                         wrap.style.transition = `all 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) ${idx * 0.12}s`;
-                        
+
                         setTimeout(() => {
                             wrap.style.opacity = '1';
                             wrap.style.transform = 'translateY(0)';
@@ -1120,4 +1686,5 @@
         });
     </script>
 </body>
+
 </html>

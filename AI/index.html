@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TensorFlow.js 线性回归可视化</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            background: linear-gradient(90deg, #4ECDC4, #45B7D1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.5);
+            font-size: 0.95rem;
+        }
+
+        .canvas-container {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        canvas {
+            display: block;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4ECDC4, #45B7D1);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(78, 205, 196, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.15);
+        }
+
+        .info-panel {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            padding: 20px 30px;
+        }
+
+        .info-item {
+            text-align: center;
+        }
+
+        .info-label {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #4ECDC4;
+            font-family: 'Consolas', monospace;
+        }
+
+        .loss-bar {
+            width: 400px;
+            height: 20px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        .loss-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FF6B6B, #FF8E53);
+            width: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .epoch-info {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.5);
+            margin-top: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🧠 TensorFlow.js 线性回归</h1>
+        <p>可视化训练过程 · 实时拟合曲线</p>
+    </div>
+
+    <div class="canvas-container">
+        <canvas id="canvas" width="600" height="400"></canvas>
+    </div>
+
+    <div class="controls">
+        <button class="btn btn-primary" onclick="startTraining()">开始训练</button>
+        <button class="btn btn-secondary" onclick="resetTraining()">重置</button>
+    </div>
+
+    <div class="info-panel">
+        <div class="info-item">
+            <div class="info-label">斜率 (m)</div>
+            <div class="info-value" id="slopeValue">0.00</div>
+        </div>
+        <div class="info-item">
+            <div class="info-label">截距 (b)</div>
+            <div class="info-value" id="interceptValue">0.00</div>
+        </div>
+        <div class="info-item">
+            <div class="info-label">损失值</div>
+            <div class="info-value" id="lossValue">0.00</div>
+        </div>
+        <div class="info-item">
+            <div class="info-label">训练轮次</div>
+            <div class="info-value" id="epochValue">0</div>
+        </div>
+    </div>
+
+    <div class="loss-bar">
+        <div class="loss-fill" id="lossFill"></div>
+    </div>
+    <div class="epoch-info" id="epochInfo">点击开始训练</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.10.0/dist/tf.min.js"></script>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const slopeValue = document.getElementById('slopeValue');
+        const interceptValue = document.getElementById('interceptValue');
+        const lossValue = document.getElementById('lossValue');
+        const epochValue = document.getElementById('epochValue');
+        const lossFill = document.getElementById('lossFill');
+        const epochInfo = document.getElementById('epochInfo');
+
+        const width = canvas.width;
+        const height = canvas.height;
+        const padding = 50;
+
+        const xsData = [1, 2, 3, 4, 5, 6, 7, 8];
+        const ysData = [2.1, 4.2, 6.1, 8.3, 10.2, 12.1, 14.3, 16.2];
+
+        let slope = 0;
+        let intercept = 0;
+        let training = false;
+        let epoch = 0;
+        let maxEpochs = 100;
+
+        function drawGrid() {
+            ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+            ctx.lineWidth = 1;
+            
+            for (let x = padding; x < width - padding; x += 50) {
+                ctx.beginPath();
+                ctx.moveTo(x, padding);
+                ctx.lineTo(x, height - padding);
+                ctx.stroke();
+            }
+            
+            for (let y = padding; y < height - padding; y += 50) {
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(width - padding, y);
+                ctx.stroke();
+            }
+
+            ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding, height/2);
+            ctx.lineTo(width - padding, height/2);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(width/2, padding);
+            ctx.lineTo(width/2, height - padding);
+            ctx.stroke();
+        }
+
+        function drawDataPoints() {
+            ctx.fillStyle = '#FF6B6B';
+            ctx.shadowColor = '#FF6B6B';
+            ctx.shadowBlur = 10;
+            
+            xsData.forEach((x, i) => {
+                const px = padding + (x / 10) * (width - 2 * padding);
+                const py = height - padding - (ysData[i] / 20) * (height - 2 * padding);
+                ctx.beginPath();
+                ctx.arc(px, py, 8, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            ctx.shadowBlur = 0;
+        }
+
+        function drawLine(m, b) {
+            ctx.strokeStyle = '#4ECDC4';
+            ctx.lineWidth = 3;
+            ctx.shadowColor = '#4ECDC4';
+            ctx.shadowBlur = 15;
+            
+            const x1 = 0;
+            const y1 = m * x1 + b;
+            const x2 = 10;
+            const y2 = m * x2 + b;
+            
+            const px1 = padding + (x1 / 10) * (width - 2 * padding);
+            const py1 = height - padding - (y1 / 20) * (height - 2 * padding);
+            const px2 = padding + (x2 / 10) * (width - 2 * padding);
+            const py2 = height - padding - (y2 / 20) * (height - 2 * padding);
+            
+            ctx.beginPath();
+            ctx.moveTo(Math.max(padding, px1), Math.min(height - padding, py1));
+            ctx.lineTo(Math.min(width - padding, px2), Math.max(padding, py2));
+            ctx.stroke();
+            
+            ctx.shadowBlur = 0;
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+            drawGrid();
+            drawDataPoints();
+            drawLine(slope, intercept);
+        }
+
+        async function trainStep() {
+            if (!training || epoch >= maxEpochs) {
+                training = false;
+                epochInfo.textContent = '训练完成!';
+                return;
+            }
+
+            const xs = tf.tensor(xsData);
+            const ys = tf.tensor(ysData);
+            
+            const m = tf.variable(tf.scalar(slope));
+            const b = tf.variable(tf.scalar(intercept));
+            
+            const optimizer = tf.train.sgd(0.01);
+            
+            optimizer.minimize(() => {
+                const predictions = xs.mul(m).add(b);
+                const loss = predictions.sub(ys).square().mean();
+                return loss;
+            });
+
+            slope = m.dataSync()[0];
+            intercept = b.dataSync()[0];
+            
+            const predictions = xs.mul(slope).add(intercept);
+            const loss = predictions.sub(ys).square().mean();
+            const lossVal = loss.dataSync()[0];
+
+            slopeValue.textContent = slope.toFixed(4);
+            interceptValue.textContent = intercept.toFixed(4);
+            lossValue.textContent = lossVal.toFixed(4);
+            epochValue.textContent = ++epoch;
+            
+            const maxLoss = 50;
+            lossFill.style.width = `${Math.max(5, (1 - lossVal / maxLoss) * 100)}%`;
+            
+            epochInfo.textContent = `训练中... ${Math.round((epoch / maxEpochs) * 100)}%`;
+
+            draw();
+
+            tf.dispose([xs, ys, predictions, loss]);
+            
+            requestAnimationFrame(trainStep);
+        }
+
+        function startTraining() {
+            if (training) return;
+            training = true;
+            epoch = 0;
+            epochInfo.textContent = '训练开始...';
+            trainStep();
+        }
+
+        function resetTraining() {
+            training = false;
+            slope = 0;
+            intercept = 0;
+            epoch = 0;
+            slopeValue.textContent = '0.00';
+            interceptValue.textContent = '0.00';
+            lossValue.textContent = '0.00';
+            epochValue.textContent = '0';
+            lossFill.style.width = '100%';
+            epochInfo.textContent = '点击开始训练';
+            draw();
+        }
+
+        draw();
+    </script>
+</body>
+</html>

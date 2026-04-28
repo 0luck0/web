@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGPU 基础模板</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: #0a0a1a; overflow: hidden; }
+        canvas { display: block; width: 100vw; height: 100vh; }
+        .info { position: fixed; top: 20px; left: 20px; color: #fff; font-family: 'Segoe UI', sans-serif; background: rgba(0,0,0,0.6); padding: 15px 20px; border-radius: 12px; border: 1px solid rgba(168,85,247,0.2); }
+        .info h2 { color: #a855f7; margin-bottom: 8px; font-size: 1.2rem; }
+        .info p { color: rgba(255,255,255,0.6); font-size: 0.85rem; line-height: 1.5; }
+        .info .tag { display: inline-block; background: rgba(168,85,247,0.15); color: #a855f7; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; margin-top: 8px; }
+        .error { color: #ff4444; font-size: 0.8rem; margin-top: 8px; }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div class="info">
+        <h2>WebGPU Template</h2>
+        <p>下一代 Web 图形 API 渲染演示</p>
+        <span class="tag">WebGPU</span>
+        <div id="webgpu-status"></div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const statusDiv = document.getElementById('webgpu-status');
+
+        async function init() {
+            if (!navigator.gpu) {
+                statusDiv.innerHTML = '<div class="error">❌ 您的浏览器不支持 WebGPU</div>';
+                statusDiv.style.display = 'block';
+                return;
+            }
+
+            const adapter = await navigator.gpu.requestAdapter();
+            if (!adapter) {
+                statusDiv.innerHTML = '<div class="error">❌ 无法获取 WebGPU 适配器</div>';
+                statusDiv.style.display = 'block';
+                return;
+            }
+
+            const device = await adapter.requestDevice();
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            const context = canvas.getContext('webgpu');
+            const format = navigator.gpu.getPreferredCanvasFormat();
+            
+            context.configure({
+                device: device,
+                format: format,
+                alphaMode: 'premultiplied'
+            });
+
+            const vertexShaderModule = device.createShaderModule({
+                code: `
+                    @vertex
+                    fn main(@location(0) position: vec4f) -> @builtin(position) vec4f {
+                        return position;
+                    }
+                `
+            });
+
+            const fragmentShaderModule = device.createShaderModule({
+                code: `
+                    @fragment
+                    fn main() -> @location(0) vec4f {
+                        return vec4f(0.8, 0.2, 0.8, 1.0);
+                    }
+                `
+            });
+
+            const pipeline = device.createRenderPipeline({
+                layout: 'auto',
+                vertex: {
+                    module: vertexShaderModule,
+                    entryPoint: 'main',
+                    buffers: [{
+                        attributes: [{
+                            shaderLocation: 0,
+                            offset: 0,
+                            format: 'float32x4'
+                        }],
+                        arrayStride: 16,
+                        stepMode: 'vertex'
+                    }]
+                },
+                fragment: {
+                    module: fragmentShaderModule,
+                    entryPoint: 'main',
+                    targets: [{
+                        format: format
+                    }]
+                },
+                primitive: {
+                    topology: 'triangle-list'
+                }
+            });
+
+            const vertexData = new Float32Array([
+                0.0,  0.5,  0.0, 1.0,
+               -0.5, -0.5,  0.0, 1.0,
+                0.5, -0.5,  0.0, 1.0,
+            ]);
+
+            const vertexBuffer = device.createBuffer({
+                size: vertexData.byteLength,
+                usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
+            });
+
+            device.queue.writeBuffer(vertexBuffer, 0, vertexData);
+
+            function render() {
+                const commandEncoder = device.createCommandEncoder();
+
+                const textureView = context.getCurrentTexture().createView();
+
+                const renderPassDescriptor = {
+                    colorAttachments: [{
+                        view: textureView,
+                        clearValue: { r: 0.05, g: 0.05, b: 0.1, a: 1.0 },
+                        loadOp: 'clear',
+                        storeOp: 'store'
+                    }]
+                };
+
+                const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor);
+                passEncoder.setPipeline(pipeline);
+                passEncoder.setVertexBuffer(0, vertexBuffer);
+                passEncoder.draw(3);
+                passEncoder.end();
+
+                device.queue.submit([commandEncoder.finish()]);
+
+                requestAnimationFrame(render);
+            }
+
+            render();
+            statusDiv.innerHTML = '<div style="color: #22c55e; font-size: 0.8rem; margin-top: 8px;">✓ WebGPU 初始化成功</div>';
+        }
+
+        init();
+    </script>
+</body>
+</html>
